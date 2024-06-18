@@ -1,15 +1,20 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/hatrungt1n/go-api-sample/configs"
+	"github.com/hatrungt1n/go-api-sample/routes"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
-        router := gin.Default()
+		router := gin.Default()
 
-        router.GET("/", func(c *gin.Context) {
-                c.JSON(200, gin.H{
-                        "data": "Hello from Gin-gonic & mongoDB",
-                })
-        })
+		//run database
+		configs.ConnectDB()
 
-        router.Run("localhost:6000") 
+		//routes
+    routes.UserRoute(router)
+
+		router.Run("localhost:6000") 
 }
