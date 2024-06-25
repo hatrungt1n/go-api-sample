@@ -1,0 +1,33 @@
+definitions:
+  controllers.User:
+    properties:
+      id:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      title:
+        type: string
+    required:
+    - location
+    - name
+    - title
+    type: object
+info:
+  contact: {}
+paths:
+  /users:
+    get:
+      description: get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            items:
+              $ref: '#/definitions/controllers.User'
+            type: array
+      summary: Get a list of users
+swagger: "2.0"

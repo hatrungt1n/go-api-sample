@@ -55,6 +55,18 @@ func CreateUser() gin.HandlerFunc {
     }
 }
 
+type User struct {
+	Id       primitive.ObjectID `json:"id,omitempty"`
+	Name     string             `json:"name,omitempty" validate:"required"`
+	Location string             `json:"location,omitempty" validate:"required"`
+	Title    string             `json:"title,omitempty" validate:"required"`
+}
+
+// @Summary Get a list of users
+// @Description get all users
+// @Produce  json
+// @Success 200 {array} User "ok"
+// @Router /users [get]
 func GetAllUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

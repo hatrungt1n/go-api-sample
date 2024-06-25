@@ -6,7 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UserRoute(router *gin.Engine)  {
+// @BasePath /v1
+
+func Register(router *gin.Engine)  {
     router.GET("/users", controllers.GetAllUsers())    
     router.POST("/user", controllers.CreateUser())
 }
