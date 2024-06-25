@@ -5,6 +5,7 @@ import (
 	"github.com/hatrungt1n/go-api-sample/routes"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/hatrungt1n/go-api-sample/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -23,5 +24,5 @@ func main() {
 		// routes
     routes.Register(router)
 
-		router.Run(":8080") 
+		router.Run() 
 }
