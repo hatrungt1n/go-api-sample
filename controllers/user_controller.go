@@ -28,38 +28,38 @@ var validate = validator.New()
 // @Success 200 {object} responses.UserResponse "ok"
 // @Router /user [post]
 func CreateUser() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-        var user models.User
-        defer cancel()
-				fmt.Printf("%v",*userCollection)
-        //validate the request body
-        if err := c.BindJSON(&user); err != nil {
-            c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
-            return
-        }
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		var user models.User
+		defer cancel()
+		fmt.Printf("%v", *userCollection)
+		//validate the request body
+		if err := c.BindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
+			return
+		}
 
-        //use the validator library to validate required fields
-        if validationErr := validate.Struct(&user); validationErr != nil {
-            c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": validationErr.Error()}})
-            return
-        }
+		//use the validator library to validate required fields
+		if validationErr := validate.Struct(&user); validationErr != nil {
+			c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": validationErr.Error()}})
+			return
+		}
 
-        newUser := models.User{
-            Id:       primitive.NewObjectID(),
-            Name:     user.Name,
-            Location: user.Location,
-            Title:    user.Title,
-        }
+		newUser := models.User{
+			Id:       primitive.NewObjectID(),
+			Name:     user.Name,
+			Location: user.Location,
+			Title:    user.Title,
+		}
 
-        result, err := userCollection.InsertOne(ctx, newUser)
-        if err != nil {
-            c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
-            return
-        }
+		result, err := userCollection.InsertOne(ctx, newUser)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
+			return
+		}
 
-        c.JSON(http.StatusCreated, responses.UserResponse{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"user": result}})
-    }
+		c.JSON(http.StatusCreated, responses.UserResponse{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"user": result}})
+	}
 }
 
 // @Summary Get a list of users
@@ -69,30 +69,30 @@ func CreateUser() gin.HandlerFunc {
 // @Router /users [get]
 func GetAllUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
-			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			var users []models.User
-			defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		var users []models.User
+		defer cancel()
 
-			results, err := userCollection.Find(ctx, bson.M{})
+		results, err := userCollection.Find(ctx, bson.M{})
 
-			if err != nil {
-					c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
-					return
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
+			return
+		}
+
+		//reading from the db in an optimal way
+		defer results.Close(ctx)
+		for results.Next(ctx) {
+			var singleUser models.User
+			if err = results.Decode(&singleUser); err != nil {
+				c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
 			}
 
-			//reading from the db in an optimal way
-			defer results.Close(ctx)
-			for results.Next(ctx) {
-					var singleUser models.User
-					if err = results.Decode(&singleUser); err != nil {
-							c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
-					}
+			users = append(users, singleUser)
+		}
 
-					users = append(users, singleUser)
-			}
-
-			c.JSON(http.StatusOK,
-					responses.UserResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"users": users}},
-			)
+		c.JSON(http.StatusOK,
+			responses.UserResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"users": users}},
+		)
 	}
 }

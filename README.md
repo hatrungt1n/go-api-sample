@@ -12,19 +12,25 @@ Golang api using gin framework.
 - Install node modules
 
 ```go
-$ go get . || go mod
+$ go get . || go mod || make goinstall
 ```
 
 - Build application
 
 ```go
-$ go build -o main
+$ go build -o main || make goprod
 ```
 
 - Start application in development
 
 ```go
-$ go run main.go
+$ go run main.go || make godev
+```
+
+- Format file .go
+
+```go
+$ go format *.go || make gofmt
 ```
 
 <!-- - Test application

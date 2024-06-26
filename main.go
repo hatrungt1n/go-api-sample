@@ -11,18 +11,18 @@ import (
 )
 
 func main() {
-		router := gin.Default()
+	router := gin.Default()
 
-		// set up gin-swagger middleware
-		// swagger ui: http://localhost:8080/swagger/index.html#/
-		url := ginSwagger.URL("http://localhost:8080/swagger/doc.json")
-		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
+	// set up gin-swagger middleware
+	// swagger ui: http://localhost:8080/swagger/index.html#/
+	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json")
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
-		// run database
-		configs.ConnectDB()
-		
-		// routes
-    routes.Register(router)
+	// run database
+	configs.ConnectDB()
 
-		router.Run() 
+	// routes
+	routes.Register(router)
+
+	router.Run()
 }

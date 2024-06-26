@@ -8,7 +8,7 @@ import (
 
 // @BasePath /v1
 
-func Register(router *gin.Engine)  {
-    router.GET("/users", controllers.GetAllUsers())    
-    router.POST("/user", controllers.CreateUser())
+func Register(router *gin.Engine) {
+	router.GET("/users", controllers.GetAllUsers())
+	router.POST("/user", controllers.CreateUser())
 }
