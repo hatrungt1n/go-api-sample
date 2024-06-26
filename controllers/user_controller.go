@@ -20,6 +20,13 @@ import (
 var userCollection *mongo.Collection = configs.GetCollection(configs.DB, "users")
 var validate = validator.New()
 
+// @Summary Create a user
+// @Description create a user
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "User"
+// @Success 200 {object} responses.UserResponse "ok"
+// @Router /user [post]
 func CreateUser() gin.HandlerFunc {
     return func(c *gin.Context) {
         ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -28,13 +35,13 @@ func CreateUser() gin.HandlerFunc {
 				fmt.Printf("%v",*userCollection)
         //validate the request body
         if err := c.BindJSON(&user); err != nil {
-            c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+            c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
             return
         }
 
         //use the validator library to validate required fields
         if validationErr := validate.Struct(&user); validationErr != nil {
-            c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": validationErr.Error()}})
+            c.JSON(http.StatusBadRequest, responses.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"error": validationErr.Error()}})
             return
         }
 
@@ -47,25 +54,18 @@ func CreateUser() gin.HandlerFunc {
 
         result, err := userCollection.InsertOne(ctx, newUser)
         if err != nil {
-            c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+            c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
             return
         }
 
-        c.JSON(http.StatusCreated, responses.UserResponse{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"data": result}})
+        c.JSON(http.StatusCreated, responses.UserResponse{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"user": result}})
     }
-}
-
-type User struct {
-	Id       primitive.ObjectID `json:"id,omitempty"`
-	Name     string             `json:"name,omitempty" validate:"required"`
-	Location string             `json:"location,omitempty" validate:"required"`
-	Title    string             `json:"title,omitempty" validate:"required"`
 }
 
 // @Summary Get a list of users
 // @Description get all users
 // @Produce  json
-// @Success 200 {array} User "ok"
+// @Success 200 {array} responses.UserResponse "ok"
 // @Router /users [get]
 func GetAllUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -76,7 +76,7 @@ func GetAllUsers() gin.HandlerFunc {
 			results, err := userCollection.Find(ctx, bson.M{})
 
 			if err != nil {
-					c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+					c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
 					return
 			}
 
@@ -85,14 +85,14 @@ func GetAllUsers() gin.HandlerFunc {
 			for results.Next(ctx) {
 					var singleUser models.User
 					if err = results.Decode(&singleUser); err != nil {
-							c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+							c.JSON(http.StatusInternalServerError, responses.UserResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"error": err.Error()}})
 					}
 
 					users = append(users, singleUser)
 			}
 
 			c.JSON(http.StatusOK,
-					responses.UserResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": users}},
+					responses.UserResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"users": users}},
 			)
 	}
 }

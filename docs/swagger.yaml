@@ -1,5 +1,5 @@
 definitions:
-  controllers.User:
+  models.User:
     properties:
       id:
         type: string
@@ -14,9 +14,39 @@ definitions:
     - name
     - title
     type: object
+  responses.UserResponse:
+    properties:
+      data:
+        additionalProperties: true
+        type: object
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: create a user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/responses.UserResponse'
+      summary: Create a user
   /users:
     get:
       description: get all users
@@ -27,7 +57,7 @@ paths:
           description: ok
           schema:
             items:
-              $ref: '#/definitions/controllers.User'
+              $ref: '#/definitions/responses.UserResponse'
             type: array
       summary: Get a list of users
 swagger: "2.0"
