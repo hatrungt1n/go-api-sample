@@ -1,27 +1,26 @@
 definitions:
   models.User:
     properties:
-      id:
-        type: string
+      age:
+        type: integer
       location:
         type: string
       name:
-        type: string
-      title:
+        description: Id       primitive.ObjectID `json:"id,omitempty"`
         type: string
     required:
+    - age
     - location
     - name
-    - title
     type: object
-  responses.UserResponse:
+  util.Responses:
     properties:
-      data:
-        additionalProperties: true
-        type: object
+      data: {}
       message:
         type: string
-      status:
+      method:
+        type: string
+      statusCode:
         type: integer
     type: object
 info:
@@ -42,10 +41,10 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: ok
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/responses.UserResponse'
+            $ref: '#/definitions/util.Responses'
       summary: Create a user
   /users:
     get:
@@ -54,10 +53,10 @@ paths:
       - application/json
       responses:
         "200":
-          description: ok
+          description: OK
           schema:
             items:
-              $ref: '#/definitions/responses.UserResponse'
+              $ref: '#/definitions/util.Responses'
             type: array
       summary: Get a list of users
 swagger: "2.0"

@@ -37,10 +37,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "ok",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/responses.UserResponse"
+                            "$ref": "#/definitions/util.Responses"
                         }
                     }
                 }
@@ -55,11 +55,11 @@ const docTemplate = `{
                 "summary": "Get a list of users",
                 "responses": {
                     "200": {
-                        "description": "ok",
+                        "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/responses.UserResponse"
+                                "$ref": "#/definitions/util.Responses"
                             }
                         }
                     }
@@ -71,36 +71,34 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "required": [
+                "age",
                 "location",
-                "name",
-                "title"
+                "name"
             ],
             "properties": {
-                "id": {
-                    "type": "string"
+                "age": {
+                    "type": "integer"
                 },
                 "location": {
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
-                },
-                "title": {
+                    "description": "Id       primitive.ObjectID ` + "`" + `json:\"id,omitempty\"` + "`" + `",
                     "type": "string"
                 }
             }
         },
-        "responses.UserResponse": {
+        "util.Responses": {
             "type": "object",
             "properties": {
-                "data": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
+                "data": {},
                 "message": {
                     "type": "string"
                 },
-                "status": {
+                "method": {
+                    "type": "string"
+                },
+                "statusCode": {
                     "type": "integer"
                 }
             }
